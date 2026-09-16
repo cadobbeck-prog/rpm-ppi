@@ -140,14 +140,19 @@ img { max-width: 100%; height: auto; }
 
 .grid-2 {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
+  align-items: start;
 }
 @media (max-width: 480px) {
   .grid-2 { grid-template-columns: 1fr; }
 }
 .grid-2 .span-2 { grid-column: 1 / -1; }
 
+.field {
+  min-width: 0;
+  width: 100%;
+}
 .field label {
   display: block;
   font-size: 0.7rem;
@@ -156,9 +161,12 @@ img { max-width: 100%; height: auto; }
   color: var(--muted);
   margin-bottom: 4px;
   font-weight: 600;
+  min-height: 2.1em;
+  line-height: 1.05;
 }
 .field input, .field select, .field textarea {
   width: 100%;
+  min-width: 0;
   min-height: var(--tap);
   padding: 10px 12px;
   border-radius: 10px;
@@ -252,7 +260,7 @@ img { max-width: 100%; height: auto; }
 
 .result-row {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   margin-bottom: 10px;
 }
@@ -436,6 +444,59 @@ img { max-width: 100%; height: auto; }
   flex-wrap: wrap;
 }
 
+
+.save-hint {
+  margin: 8px 0 0;
+  font-size: 0.75rem;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.save-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  background: rgba(2, 6, 23, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.save-sheet-backdrop.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+.save-sheet {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 160;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  border-radius: 16px 16px 0 0;
+  padding: 16px 14px calc(16px + var(--safe-bottom));
+  transform: translateY(110%);
+  transition: transform 0.25s ease;
+  max-width: 520px;
+  margin: 0 auto;
+  box-shadow: 0 -8px 32px rgba(0,0,0,0.4);
+}
+.save-sheet.show { transform: translateY(0); }
+.save-sheet h3 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+}
+.save-sheet .sheet-hint {
+  margin: 0 0 14px;
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.35;
+}
+.save-sheet .sheet-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.save-sheet .sheet-actions .btn { width: 100%; }
+
 .toast {
   position: fixed;
   left: 50%;
@@ -466,7 +527,7 @@ img { max-width: 100%; height: auto; }
     color: #111;
     padding: 0;
   }
-  .app-header, .section-nav, .fab-bar, .toast, .no-print,
+  .app-header, .section-nav, .fab-bar, .toast, .save-sheet, .save-sheet-backdrop, .no-print,
   .file-btn, .result-btn:not(.active), .photo-row .btn, .rm {
     display: none !important;
   }

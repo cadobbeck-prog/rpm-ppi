@@ -409,19 +409,76 @@
     saveTimer = setTimeout(function () { saveNow(true); }, 600);
   }
 
+  function exportBaseName() {
+    return 'rpm-ppi-' + (state.header.year || 'veh') + '-' +
+      (state.header.make || 'export').replace(/\s+/g, '_') + '-' +
+      (state.header.date || 'nodate');
+  }
+
+  function downloadBlob(blob, filename) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  function showSaveSheet() {
+    const sheet = document.getElementById('save-sheet');
+    const backdrop = document.getElementById('save-sheet-backdrop');
+    if (!sheet || !backdrop) return;
+    sheet.hidden = false;
+    backdrop.hidden = false;
+    requestAnimationFrame(function () {
+      sheet.classList.add('show');
+      backdrop.classList.add('show');
+    });
+  }
+
+  function hideSaveSheet() {
+    const sheet = document.getElementById('save-sheet');
+    const backdrop = document.getElementById('save-sheet-backdrop');
+    if (!sheet || !backdrop) return;
+    sheet.classList.remove('show');
+    backdrop.classList.remove('show');
+    setTimeout(function () {
+      sheet.hidden = true;
+      backdrop.hidden = true;
+    }, 250);
+  }
+
   async function saveNow(quiet) {
     syncHeaderFromForm();
     try {
       await idbPut(JSON.parse(JSON.stringify(state)));
-      if (!quiet) toast('Saved locally');
-      else {
-        const el = document.getElementById('save-status');
-        if (el) el.textContent = 'Saved ' + new Date().toLocaleTimeString();
-      }
+      const el = document.getElementById('save-status');
+      if (el) el.textContent = 'Saved ' + new Date().toLocaleTimeString();
+      if (!quiet) toast('Saved in this browser');
+      return true;
     } catch (err) {
       console.error(err);
       toast('Save failed — storage full?', true);
+      return false;
     }
+  }
+
+  async function saveAndOfferDownload() {
+    const ok = await saveNow(false);
+    if (ok) showSaveSheet();
+  }
+
+  function downloadJSONBackup() {
+    syncHeaderFromForm();
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+    downloadBlob(blob, exportBaseName() + '.json');
+    toast('JSON saved to device');
+  }
+
+  function downloadHTMLReport() {
+    syncHeaderFromForm();
+    const blob = new Blob([buildReportHTML()], { type: 'text/html' });
+    downloadBlob(blob, exportBaseName() + '.html');
+    toast('HTML report downloaded');
   }
 
   async function loadActive() {
@@ -446,7 +503,7 @@
     state = blankState();
     fillHeaderForm();
     fullRerender();
-    saveNow(false);
+    saveNow(true);
     toast('Demo job loaded');
   }
 
@@ -461,17 +518,7 @@
   }
 
   function exportJSON() {
-    syncHeaderFromForm();
-    const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-    const a = document.createElement('a');
-    const name = 'rpm-ppi-' + (state.header.year || 'veh') + '-' +
-      (state.header.make || 'export').replace(/\s+/g, '_') + '-' +
-      (state.header.date || 'nodate') + '.json';
-    a.href = URL.createObjectURL(blob);
-    a.download = name;
-    a.click();
-    URL.revokeObjectURL(a.href);
-    toast('JSON downloaded');
+    downloadJSONBackup();
   }
 
   function buildReportHTML() {
@@ -507,19 +554,25 @@
           return '<img src="' + src + '" style="width:100px;height:75px;object-fit:cover;margin:2px;border:1px solid #ccc">';
         }).join('');
         return '<tr><td>' + escapeHtml(it.label) + (it.safety ? ' ★' : '') +
-          '</td><td style="text-align:center;font-weight:700">' + escapeHtml(res) +
+          '</td><td class="res">' + escapeHtml(res) +
           '</td><td>' + escapeHtml(r.comment || '') + '</td><td>' + photos + '</td></tr>';
       }).join('');
       return '<h3 style="margin:18px 0 6px;border-bottom:2px solid #b91c1c;padding-bottom:4px">' +
-        escapeHtml(sec.title) + '</h3><table style="width:100%;border-collapse:collapse;font-size:12px">' +
-        '<thead><tr style="background:#eee"><th align="left">Item</th><th>Result</th><th align="left">Comments</th><th>Photos</th></tr></thead>' +
+        escapeHtml(sec.title) + '</h3><table class="insp">' +
+        '<colgroup><col style="width:34%"><col style="width:12%"><col style="width:34%"><col style="width:20%"></colgroup>' +
+        '<thead><tr><th>Item</th><th>Result</th><th>Comments</th><th>Photos</th></tr></thead>' +
         '<tbody>' + rows + '</tbody></table>';
     }).join('');
 
     return '<!DOCTYPE html><html><head><meta charset="utf-8"><title>RPM PPI Report</title>' +
       '<style>body{font-family:system-ui,sans-serif;color:#111;margin:24px;max-width:900px}' +
       'h1{margin:0;color:#b91c1c}.muted{color:#555;font-size:13px}' +
-      '.meta{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin:12px 0;font-size:13px}' +
+      '.meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 16px;margin:12px 0;font-size:13px;align-items:start}' +
+      '.meta > div{min-width:0}' +
+      'table.insp{width:100%;border-collapse:collapse;table-layout:fixed;font-size:12px;margin-bottom:8px}' +
+      'table.insp th,table.insp td{padding:6px 8px;border-bottom:1px solid #ddd;vertical-align:top;word-wrap:break-word;overflow-wrap:anywhere}' +
+      'table.insp th{background:#eee;text-align:left;font-weight:700}' +
+      'table.insp th:nth-child(2),table.insp td.res{text-align:center;font-weight:700}' +
       '.box{border:1px solid #ccc;padding:10px;margin:10px 0}' +
       '.warn{background:#fff7ed;border:1px solid #f59e0b;padding:10px;font-size:12px}' +
       '@media print{button{display:none}}</style></head><body>' +
@@ -638,13 +691,18 @@
       fullRerender();
       scheduleSave();
     });
-    document.getElementById('btn-save').onclick = function () { saveNow(false); };
+    document.getElementById('btn-save').onclick = function () { saveAndOfferDownload(); };
     document.getElementById('btn-export-json').onclick = exportJSON;
     document.getElementById('btn-report').onclick = exportReport;
     document.getElementById('btn-demo').onclick = resetDemo;
-    document.getElementById('btn-fab-save').onclick = function () { saveNow(false); };
+    document.getElementById('btn-fab-save').onclick = function () { saveAndOfferDownload(); };
     document.getElementById('btn-fab-json').onclick = exportJSON;
     document.getElementById('btn-fab-report').onclick = exportReport;
+
+    document.getElementById('btn-save-device').onclick = function () { downloadJSONBackup(); };
+    document.getElementById('btn-save-html').onclick = function () { downloadHTMLReport(); };
+    document.getElementById('btn-save-done').onclick = hideSaveSheet;
+    document.getElementById('save-sheet-backdrop').onclick = hideSaveSheet;
   }
 
   async function init() {
