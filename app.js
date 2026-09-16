@@ -550,18 +550,19 @@
       if (result === want) {
         return want === 'fail' ? 'X' : '✓';
       }
-      return '';
+      return '&nbsp;';
     }
 
     const sectionsHtml = activeSections().map(function (sec) {
       const rows = sec.items.map(function (it) {
         const r = state.results[it.id] || {};
         const res = r.result || null;
+        const commentCell = (r.comment && String(r.comment).trim()) ? escapeHtml(r.comment) : '&nbsp;';
         return '<tr><td>' + escapeHtml(it.label) + (it.safety ? ' ★' : '') +
           '</td><td class="res">' + markCell(res, 'pass') +
           '</td><td class="res">' + markCell(res, 'fail') +
           '</td><td class="res">' + markCell(res, 'na') +
-          '</td><td>' + escapeHtml(r.comment || '') + '</td></tr>';
+          '</td><td>' + commentCell + '</td></tr>';
       }).join('');
 
       const photoItems = sec.items.filter(function (it) {
@@ -583,7 +584,7 @@
 
       return '<h3 style="margin:18px 0 6px;border-bottom:2px solid #b91c1c;padding-bottom:4px">' +
         escapeHtml(sec.title) + '</h3><table class="insp">' +
-        '<colgroup><col style="width:42%"><col style="width:8%"><col style="width:8%"><col style="width:8%"><col style="width:34%"></colgroup>' +
+        '<colgroup><col style="width:40%"><col style="width:10%"><col style="width:10%"><col style="width:10%"><col style="width:30%"></colgroup>' +
         '<thead><tr><th>Item</th><th class="res">Pass</th><th class="res">Fail</th><th class="res">N/A</th><th>Comments</th></tr></thead>' +
         '<tbody>' + rows + '</tbody></table>' + sectionPhotos;
     }).join('');
@@ -616,8 +617,8 @@
       'table.meta-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:13px;margin:12px 0}' +
       'table.meta-table th,table.meta-table td{border:1px solid #bbb;padding:5px 8px;vertical-align:top;word-wrap:break-word;overflow-wrap:anywhere}' +
       'table.meta-table th{background:#f3f3f3;text-align:left;font-weight:700;width:18%}' +
-      'table.insp{width:100%;border-collapse:collapse;table-layout:fixed;font-size:12px;margin-bottom:8px}' +
-      'table.insp th,table.insp td{padding:6px 8px;border:1px solid #bbb;vertical-align:top;word-wrap:break-word;overflow-wrap:anywhere}' +
+      'table.insp{width:100%;table-layout:fixed;border-collapse:collapse;font-size:12px;margin-bottom:8px}' +
+      'table.insp th,table.insp td{padding:4px 6px;border:1px solid #999;vertical-align:top;word-wrap:break-word;overflow-wrap:anywhere}' +
       'table.insp th{background:#eee;text-align:left;font-weight:700}' +
       'table.insp th.res,table.insp td.res{text-align:center;font-weight:700}' +
       '.box{border:1px solid #ccc;padding:10px;margin:10px 0}' +
