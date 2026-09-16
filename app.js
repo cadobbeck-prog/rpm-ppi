@@ -540,71 +540,106 @@
     const reqPhotos = (DATA.photoChecklist || []).map(function (p) {
       const photos = state.requiredPhotos[p.id] || [];
       if (!photos.length) return '<p><strong>' + escapeHtml(p.label) + ':</strong> (none)</p>';
-      return '<div><strong>' + escapeHtml(p.label) + '</strong><div style="display:flex;flex-wrap:wrap;gap:8px;margin:6px 0">' +
+      return '<div><strong>' + escapeHtml(p.label) + '</strong><div class="photo-row">' +
         photos.map(function (src) {
-          return '<img src="' + src + '" style="width:160px;height:120px;object-fit:cover;border:1px solid #ccc">';
+          return '<img src="' + src + '" class="photo-thumb" alt="">';
         }).join('') + '</div></div>';
     }).join('');
+
+    function markCell(result, want) {
+      if (result === want) {
+        return want === 'fail' ? 'X' : '✓';
+      }
+      return '';
+    }
 
     const sectionsHtml = activeSections().map(function (sec) {
       const rows = sec.items.map(function (it) {
         const r = state.results[it.id] || {};
-        const res = (r.result || '—').toUpperCase();
-        const photos = (r.photos || []).map(function (src) {
-          return '<img src="' + src + '" style="width:100px;height:75px;object-fit:cover;margin:2px;border:1px solid #ccc">';
-        }).join('');
+        const res = r.result || null;
         return '<tr><td>' + escapeHtml(it.label) + (it.safety ? ' ★' : '') +
-          '</td><td class="res">' + escapeHtml(res) +
-          '</td><td>' + escapeHtml(r.comment || '') + '</td><td>' + photos + '</td></tr>';
+          '</td><td class="res">' + markCell(res, 'pass') +
+          '</td><td class="res">' + markCell(res, 'fail') +
+          '</td><td class="res">' + markCell(res, 'na') +
+          '</td><td>' + escapeHtml(r.comment || '') + '</td></tr>';
       }).join('');
+
+      const photoItems = sec.items.filter(function (it) {
+        const r = state.results[it.id];
+        return r && r.photos && r.photos.length;
+      });
+      let sectionPhotos = '';
+      if (photoItems.length) {
+        sectionPhotos = '<div class="section-photos"><strong>Section photos</strong>' +
+          photoItems.map(function (it) {
+            const r = state.results[it.id];
+            return '<div class="photo-block"><div class="photo-label">' + escapeHtml(it.label) +
+              (it.safety ? ' ★' : '') + '</div><div class="photo-row">' +
+              r.photos.map(function (src) {
+                return '<img src="' + src + '" class="photo-thumb" alt="">';
+              }).join('') + '</div></div>';
+          }).join('') + '</div>';
+      }
+
       return '<h3 style="margin:18px 0 6px;border-bottom:2px solid #b91c1c;padding-bottom:4px">' +
         escapeHtml(sec.title) + '</h3><table class="insp">' +
-        '<colgroup><col style="width:34%"><col style="width:12%"><col style="width:34%"><col style="width:20%"></colgroup>' +
-        '<thead><tr><th>Item</th><th>Result</th><th>Comments</th><th>Photos</th></tr></thead>' +
-        '<tbody>' + rows + '</tbody></table>';
+        '<colgroup><col style="width:42%"><col style="width:8%"><col style="width:8%"><col style="width:8%"><col style="width:34%"></colgroup>' +
+        '<thead><tr><th>Item</th><th class="res">Pass</th><th class="res">Fail</th><th class="res">N/A</th><th>Comments</th></tr></thead>' +
+        '<tbody>' + rows + '</tbody></table>' + sectionPhotos;
     }).join('');
 
+    const metaTable =
+      '<table class="meta-table">' +
+      '<colgroup><col style="width:18%"><col style="width:32%"><col style="width:18%"><col style="width:32%"></colgroup>' +
+      '<tr><th>Year</th><td>' + escapeHtml(h.year) + '</td><th>LIC/STK#</th><td>' + escapeHtml(h.licStk) + '</td></tr>' +
+      '<tr><th>Make</th><td>' + escapeHtml(h.make) + '</td><th>VIN</th><td>' + escapeHtml(h.vin) + '</td></tr>' +
+      '<tr><th>Model</th><td>' + escapeHtml(h.model) + '</td><th>Mileage</th><td>IN: ' + escapeHtml(h.mileageIn) + ' · OUT: ' + escapeHtml(h.mileageOut) + '</td></tr>' +
+      '<tr><th>Date</th><td>' + escapeHtml(h.date) + '</td><th>Tech</th><td>' + escapeHtml(h.tech) + '</td></tr>' +
+      '<tr><th>Client</th><td>' + escapeHtml(h.client) + '</td><th>Location</th><td>' + escapeHtml(h.dealerLocation) + '</td></tr>' +
+      '<tr><th>Fee</th><td>$' + escapeHtml(h.fee) + '</td><th>Progress</th><td>' + prog.done + '/' + prog.total + ' · Fails: ' + failCount + ' (safety fails: ' + safetyFail + ')</td></tr>' +
+      '</table>';
+
+    const sigBlock =
+      '<table class="meta-table" style="margin-top:24px">' +
+      '<colgroup><col style="width:50%"><col style="width:50%"></colgroup>' +
+      '<tr><td><strong>Technician Signature:</strong><br>' +
+      (state.techSignature ? '<img src="' + state.techSignature + '" style="max-width:280px;border:1px solid #ccc;background:#fff">' : '(unsigned)') +
+      '<br>Date: ' + escapeHtml(state.techSigDate || '') + '</td><td><strong>Customer Signature:</strong><br>' +
+      (state.customerSignature ? '<img src="' + state.customerSignature + '" style="max-width:280px;border:1px solid #ccc;background:#fff">' : '(unsigned)') +
+      '<br>Date: ' + escapeHtml(state.customerSigDate || '') + '</td></tr></table>';
+
     return '<!DOCTYPE html><html><head><meta charset="utf-8"><title>RPM PPI Report</title>' +
-      '<style>body{font-family:system-ui,sans-serif;color:#111;margin:24px;max-width:900px}' +
+      '<style>' +
+      '@page{margin:0.5in}' +
+      'body{font-family:system-ui,sans-serif;color:#111;margin:12px;max-width:none}' +
       'h1{margin:0;color:#b91c1c}.muted{color:#555;font-size:13px}' +
-      '.meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 16px;margin:12px 0;font-size:13px;align-items:start}' +
-      '.meta > div{min-width:0}' +
+      'table.meta-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:13px;margin:12px 0}' +
+      'table.meta-table th,table.meta-table td{border:1px solid #bbb;padding:5px 8px;vertical-align:top;word-wrap:break-word;overflow-wrap:anywhere}' +
+      'table.meta-table th{background:#f3f3f3;text-align:left;font-weight:700;width:18%}' +
       'table.insp{width:100%;border-collapse:collapse;table-layout:fixed;font-size:12px;margin-bottom:8px}' +
-      'table.insp th,table.insp td{padding:6px 8px;border-bottom:1px solid #ddd;vertical-align:top;word-wrap:break-word;overflow-wrap:anywhere}' +
+      'table.insp th,table.insp td{padding:6px 8px;border:1px solid #bbb;vertical-align:top;word-wrap:break-word;overflow-wrap:anywhere}' +
       'table.insp th{background:#eee;text-align:left;font-weight:700}' +
-      'table.insp th:nth-child(2),table.insp td.res{text-align:center;font-weight:700}' +
+      'table.insp th.res,table.insp td.res{text-align:center;font-weight:700}' +
       '.box{border:1px solid #ccc;padding:10px;margin:10px 0}' +
       '.warn{background:#fff7ed;border:1px solid #f59e0b;padding:10px;font-size:12px}' +
-      '@media print{button{display:none}}</style></head><body>' +
+      '.section-photos{margin:4px 0 14px;padding:8px;border:1px dashed #ccc;background:#fafafa;font-size:12px}' +
+      '.photo-block{margin:6px 0}' +
+      '.photo-label{font-weight:600;margin-bottom:4px}' +
+      '.photo-row{display:flex;flex-wrap:wrap;gap:8px}' +
+      '.photo-thumb{max-width:120px;height:auto;object-fit:cover;border:1px solid #ccc}' +
+      '@media print{button{display:none}body{margin:0}}' +
+      '</style></head><body>' +
       '<button onclick="window.print()" style="padding:10px 16px;font-size:14px;margin-bottom:12px">Print / Save PDF</button>' +
       '<h1>RPM Services — Vehicle Inspection</h1>' +
       '<p class="muted">' + escapeHtml(DATA.meta.formTitle) + ' · ' + escapeHtml(h.shopName || 'RPM Services') +
       (h.shopAddress ? ' · ' + escapeHtml(h.shopAddress) : '') + '</p>' +
-      '<div class="meta">' +
-      '<div><strong>Year:</strong> ' + escapeHtml(h.year) + '</div>' +
-      '<div><strong>LIC/STK#:</strong> ' + escapeHtml(h.licStk) + '</div>' +
-      '<div><strong>Make:</strong> ' + escapeHtml(h.make) + '</div>' +
-      '<div><strong>VIN:</strong> ' + escapeHtml(h.vin) + '</div>' +
-      '<div><strong>Model:</strong> ' + escapeHtml(h.model) + '</div>' +
-      '<div><strong>Mileage IN:</strong> ' + escapeHtml(h.mileageIn) + ' · <strong>OUT:</strong> ' + escapeHtml(h.mileageOut) + '</div>' +
-      '<div><strong>Date:</strong> ' + escapeHtml(h.date) + '</div>' +
-      '<div><strong>Tech:</strong> ' + escapeHtml(h.tech) + '</div>' +
-      '<div><strong>Client:</strong> ' + escapeHtml(h.client) + '</div>' +
-      '<div><strong>Location:</strong> ' + escapeHtml(h.dealerLocation) + '</div>' +
-      '<div><strong>Fee:</strong> $' + escapeHtml(h.fee) + '</div>' +
-      '<div><strong>Progress:</strong> ' + prog.done + '/' + prog.total + ' · Fails: ' + failCount + ' (safety fails: ' + safetyFail + ')</div>' +
-      '</div><div class="warn"><ul style="margin:0;padding-left:18px">' +
+      metaTable +
+      '<div class="warn"><ul style="margin:0;padding-left:18px">' +
       (DATA.meta.disclaimers || []).map(function (d) { return '<li>' + escapeHtml(d) + '</li>'; }).join('') +
       '</ul></div><h2>Required Photos</h2>' + reqPhotos + sectionsHtml +
       '<h3>Technician Comments</h3><div class="box">' +
       escapeHtml(state.technicianComments || '(none)').replace(/\n/g, '<br>') + '</div>' +
-      '<div class="meta" style="margin-top:24px">' +
-      '<div><strong>Technician Signature:</strong><br>' +
-      (state.techSignature ? '<img src="' + state.techSignature + '" style="max-width:280px;border:1px solid #ccc;background:#fff">' : '(unsigned)') +
-      '<br>Date: ' + escapeHtml(state.techSigDate || '') + '</div>' +
-      '<div><strong>Customer Signature:</strong><br>' +
-      (state.customerSignature ? '<img src="' + state.customerSignature + '" style="max-width:280px;border:1px solid #ccc;background:#fff">' : '(unsigned)') +
-      '<br>Date: ' + escapeHtml(state.customerSigDate || '') + '</div></div>' +
+      sigBlock +
       '<p class="muted">Generated ' + new Date().toLocaleString() + ' · RPM Services PPI</p></body></html>';
   }
 
