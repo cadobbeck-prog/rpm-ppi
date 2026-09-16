@@ -140,7 +140,123 @@
     });
   }
 
+  function dataUrlToBlob(dataUrl) {
+    var parts = String(dataUrl).split(',');
+    var mime = 'image/jpeg';
+    var m = parts[0].match(/data:([^;]+)/);
+    if (m) mime = m[1];
+    var bin = atob(parts[1] || '');
+    var arr = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+    return new Blob([arr], { type: mime });
+  }
+
+  function downloadBlob(blob, filename) {
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+  }
+
+  async function savePhotoToDevice(dataUrl, filename) {
+    try {
+      var blob = dataUrlToBlob(dataUrl);
+      var file = new File([blob], filename, { type: blob.type || 'image/jpeg' });
+      if (navigator.canShare && navigator.share) {
+        try {
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({ files: [file], title: 'PPI photo' });
+            return 'shared';
+          }
+        } catch (shareErr) {
+          // User cancel or share unsupported mid-flight — don't block attach
+          if (shareErr && (shareErr.name === 'AbortError' || shareErr.name === 'NotAllowedError')) {
+            return 'cancelled';
+          }
+        }
+      }
+      downloadBlob(blob, filename);
+      return 'downloaded';
+    } catch (err) {
+      console.error(err);
+      return 'failed';
+    }
+  }
+
+  function photoFilename(kind, key, index) {
+    var safe = String(key || 'photo').replace(/[^a-zA-Z0-9_-]+/g, '-').replace(/^-+|-+$/g, '') || 'photo';
+    var n = (index == null ? 1 : index + 1);
+    return 'ppi-' + (kind === 'item' ? 'item-' : '') + safe + '-' + n + '.jpg';
+  }
+
+  function collectAllJobPhotos() {
+    var out = [];
+    (DATA.photoChecklist || []).forEach(function (p) {
+      var photos = state.requiredPhotos[p.id] || [];
+      photos.forEach(function (src, i) {
+        out.push({ src: src, filename: photoFilename('req', p.id, i), label: p.label });
+      });
+    });
+    activeSections().forEach(function (sec) {
+      sec.items.forEach(function (it) {
+        var r = state.results[it.id];
+        if (!r || !r.photos || !r.photos.length) return;
+        r.photos.forEach(function (src, i) {
+          out.push({ src: src, filename: photoFilename('item', it.id, i), label: it.label });
+        });
+      });
+    });
+    return out;
+  }
+
+  async function saveAllPhotosToPhone() {
+    var list = collectAllJobPhotos();
+    if (!list.length) {
+      toast('No photos in this job yet', true);
+      return;
+    }
+    var ok = 0;
+    var failed = 0;
+    // Prefer one multi-file share when possible; else sequential download
+    try {
+      var files = list.map(function (p) {
+        var blob = dataUrlToBlob(p.src);
+        return new File([blob], p.filename, { type: blob.type || 'image/jpeg' });
+      });
+      if (navigator.canShare && navigator.share && navigator.canShare({ files: files })) {
+        try {
+          await navigator.share({ files: files, title: 'PPI photos' });
+          toast('Shared ' + files.length + ' photo' + (files.length === 1 ? '' : 's'));
+          return;
+        } catch (shareErr) {
+          if (shareErr && (shareErr.name === 'AbortError' || shareErr.name === 'NotAllowedError')) {
+            toast('Share cancelled');
+            return;
+          }
+        }
+      }
+    } catch (_) {}
+
+    for (var i = 0; i < list.length; i++) {
+      var result = await savePhotoToDevice(list[i].src, list[i].filename);
+      if (result === 'downloaded' || result === 'shared') ok += 1;
+      else if (result === 'failed') failed += 1;
+      // Brief pause so multiple downloads don't get blocked by the browser
+      if (i < list.length - 1 && result === 'downloaded') {
+        await new Promise(function (r) { setTimeout(r, 250); });
+      }
+    }
+    if (ok) toast('Saved ' + ok + ' photo' + (ok === 1 ? '' : 's') + ' to phone' + (failed ? ' (' + failed + ' failed)' : ''));
+    else toast('Could not save photos', true);
+  }
+
   function activeSections() {
+
     const list = DATA.sections.slice();
     if (state.commercialEnabled) list.push(DATA.commercialSection);
     return list;
@@ -250,7 +366,11 @@
       '<label class="btn btn-sm file-btn no-print">🖼 Gallery' +
       '<input type="file" accept="image/*" data-photo-add="' +
       escapeHtml(key) + '" data-photo-kind="' + kind + '"></label>' +
-      '<div class="photo-thumbs">' + thumbs + '</div></div>';
+      '<div class="photo-thumbs">' + thumbs + '</div>' +
+      (kind === 'req'
+        ? '<p class="photo-device-hint muted no-print">Photos stay in this job unless you Save photos to phone (or share/save after each shot).</p>'
+        : '') +
+      '</div>';
   }
 
   function resultButtons(itemId, current) {
@@ -387,6 +507,11 @@
       }
       scheduleSave();
       toast('Photo attached');
+      var idx = kind === 'item'
+        ? (state.results[key].photos.length - 1)
+        : (state.requiredPhotos[key].length - 1);
+      // Offer share/download to Camera Roll / Files; never block the attach
+      savePhotoToDevice(dataUrl, photoFilename(kind, key, idx)).catch(function () {});
     } catch (err) {
       console.error(err);
       toast('Photo failed', true);
@@ -545,13 +670,25 @@
       });
     });
 
+    function photoImg(src, extraClass) {
+      const cls = 'photo-thumb photo-zoom' + (extraClass ? ' ' + extraClass : '');
+      return '<img src="' + src + '" class="' + cls + '" alt="" loading="lazy">';
+    }
+
+    const gallerySeen = {};
+    const gallerySrcs = [];
+    function addGallerySrc(src) {
+      if (!src || gallerySeen[src]) return;
+      gallerySeen[src] = true;
+      gallerySrcs.push(src);
+    }
+
     const reqPhotos = (DATA.photoChecklist || []).map(function (p) {
       const photos = state.requiredPhotos[p.id] || [];
+      photos.forEach(addGallerySrc);
       if (!photos.length) return '<p><strong>' + escapeHtml(p.label) + ':</strong> (none)</p>';
       return '<div><strong>' + escapeHtml(p.label) + '</strong><div class="photo-row">' +
-        photos.map(function (src) {
-          return '<img src="' + src + '" class="photo-thumb" alt="">';
-        }).join('') + '</div></div>';
+        photos.map(function (src) { return photoImg(src); }).join('') + '</div></div>';
     }).join('');
 
     function markCell(result, want) {
@@ -582,11 +719,10 @@
         sectionPhotos = '<div class="section-photos"><strong>Section photos</strong>' +
           photoItems.map(function (it) {
             const r = state.results[it.id];
+            r.photos.forEach(addGallerySrc);
             return '<div class="photo-block"><div class="photo-label">' + escapeHtml(it.label) +
               (it.safety ? ' ★' : '') + '</div><div class="photo-row">' +
-              r.photos.map(function (src) {
-                return '<img src="' + src + '" class="photo-thumb" alt="">';
-              }).join('') + '</div></div>';
+              r.photos.map(function (src) { return photoImg(src); }).join('') + '</div></div>';
           }).join('') + '</div>';
       }
 
@@ -596,6 +732,15 @@
         '<thead><tr><th>Item</th><th class="res">Pass</th><th class="res">Fail</th><th class="res">N/A</th><th>Comments</th></tr></thead>' +
         '<tbody>' + rows + '</tbody></table>' + sectionPhotos;
     }).join('');
+
+    let galleryHtml = '';
+    if (gallerySrcs.length) {
+      galleryHtml = '<h2>All photos — tap to enlarge</h2><div class="photo-gallery photo-row">' +
+        gallerySrcs.map(function (src) { return photoImg(src, 'photo-gallery-thumb'); }).join('') +
+        '</div>';
+    } else {
+      galleryHtml = '<h2>All photos — tap to enlarge</h2><p class="muted">(no photos yet)</p>';
+    }
 
     const metaTable =
       '<table class="meta-table">' +
@@ -617,6 +762,27 @@
       (state.customerSignature ? '<img src="' + state.customerSignature + '" style="max-width:280px;border:1px solid #ccc;background:#fff">' : '(unsigned)') +
       '<br>Date: ' + escapeHtml(state.customerSigDate || '') + '</td></tr></table>';
 
+    const lightbox =
+      '<div id="lb" class="lb" hidden>' +
+      '<button type="button" class="lb-close" aria-label="Close">×</button>' +
+      '<img id="lb-img" alt="">' +
+      '</div>';
+
+    const lightboxScript =
+      '<script>(function(){' +
+      'var lb=document.getElementById("lb");' +
+      'var img=document.getElementById("lb-img");' +
+      'function openLb(src){img.src=src;lb.hidden=false;document.body.style.overflow="hidden";}' +
+      'function closeLb(){lb.hidden=true;img.removeAttribute("src");document.body.style.overflow="";}' +
+      'document.addEventListener("click",function(e){' +
+      'var t=e.target;' +
+      'if(t&&t.classList&&(t.classList.contains("photo-thumb")||t.classList.contains("photo-zoom"))){' +
+      'e.preventDefault();openLb(t.getAttribute("src")||t.src);return;}' +
+      'if(t===lb||(t&&t.classList&&t.classList.contains("lb-close"))){closeLb();}' +
+      '});' +
+      'document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!lb.hidden)closeLb();});' +
+      '})();<\/script>';
+
     return '<!DOCTYPE html><html><head><meta charset="utf-8"><title>RPM PPI Report</title>' +
       '<style>' +
       '@page{margin:0.5in}' +
@@ -635,8 +801,14 @@
       '.photo-block{margin:6px 0}' +
       '.photo-label{font-weight:600;margin-bottom:4px}' +
       '.photo-row{display:flex;flex-wrap:wrap;gap:8px}' +
-      '.photo-thumb{max-width:120px;height:auto;object-fit:cover;border:1px solid #ccc}' +
-      '@media print{button{display:none}body{margin:0}}' +
+      '.photo-thumb{max-width:120px;height:auto;object-fit:cover;border:1px solid #ccc;cursor:zoom-in}' +
+      '.photo-gallery{margin:8px 0 16px}' +
+      '.photo-gallery-thumb{max-width:200px}' +
+      '.lb{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box}' +
+      '.lb[hidden]{display:none!important}' +
+      '.lb img{max-width:95vw;max-height:90vh;width:auto;height:auto;object-fit:contain;border:0;box-shadow:0 4px 24px rgba(0,0,0,.5)}' +
+      '.lb-close{position:fixed;top:12px;right:16px;z-index:10000;background:transparent;border:0;color:#fff;font-size:36px;line-height:1;cursor:pointer;padding:4px 10px}' +
+      '@media print{button{display:none}.lb,.lb-close{display:none!important}body{margin:0}}' +
       '</style></head><body>' +
       '<button onclick="window.print()" style="padding:10px 16px;font-size:14px;margin-bottom:12px">Print / Save PDF</button>' +
       '<h1>RPM Services — Vehicle Inspection</h1>' +
@@ -645,11 +817,13 @@
       metaTable +
       '<div class="warn"><ul style="margin:0;padding-left:18px">' +
       (DATA.meta.disclaimers || []).map(function (d) { return '<li>' + escapeHtml(d) + '</li>'; }).join('') +
-      '</ul></div><h2>Required Photos</h2>' + reqPhotos + sectionsHtml +
+      '</ul></div><h2>Required Photos</h2>' + reqPhotos + galleryHtml + sectionsHtml +
       '<h3>Technician Comments</h3><div class="box">' +
       escapeHtml(state.technicianComments || '(none)').replace(/\n/g, '<br>') + '</div>' +
       sigBlock +
-      '<p class="muted">Generated ' + new Date().toLocaleString() + ' · RPM Services PPI</p></body></html>';
+      '<p class="muted">Generated ' + new Date().toLocaleString() + ' · RPM Services PPI</p>' +
+      lightbox + lightboxScript +
+      '</body></html>';
   }
 
   function exportReport() {
@@ -742,6 +916,10 @@
     document.getElementById('btn-fab-save').onclick = function () { saveAndOfferDownload(); };
     document.getElementById('btn-fab-json').onclick = exportJSON;
     document.getElementById('btn-fab-report').onclick = exportReport;
+    var btnPhotos = document.getElementById('btn-save-photos');
+    if (btnPhotos) btnPhotos.onclick = function () { saveAllPhotosToPhone(); };
+    var btnFabPhotos = document.getElementById('btn-fab-photos');
+    if (btnFabPhotos) btnFabPhotos.onclick = function () { saveAllPhotosToPhone(); };
 
     document.getElementById('btn-save-device').onclick = function () { downloadJSONBackup(); };
     document.getElementById('btn-save-html').onclick = function () { downloadHTMLReport(); };

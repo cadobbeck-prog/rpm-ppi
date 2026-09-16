@@ -7,11 +7,11 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="description" content="RPM Services vehicle pre-purchase / safety inspection">
-  <link rel="manifest" href="manifest.json?v=5">
+  <link rel="manifest" href="manifest.json?v=6">
   <link rel="icon" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
   <title>RPM Services PPI</title>
-  <link rel="stylesheet" href="styles.css?v=5">
+  <link rel="stylesheet" href="styles.css?v=6">
 </head>
 <body>
   <header class="app-header">
@@ -24,6 +24,7 @@
       <div class="header-actions no-print">
         <button type="button" class="btn btn-sm btn-primary" id="btn-save">Save</button>
         <button type="button" class="btn btn-sm" id="btn-report">Report</button>
+        <button type="button" class="btn btn-sm" id="btn-save-photos">Save photos to phone</button>
       </div>
     </div>
   </header>
@@ -76,6 +77,7 @@
     <section class="card" id="photos">
       <h2>Required photo checklist</h2>
       <p style="margin:0 0 10px;font-size:0.85rem;color:var(--muted)">Odo, VIN, 4 corners, engine, undercarriage, defects. Camera uses rear lens when available.</p>
+      <p class="muted no-print" style="margin:0 0 10px;font-size:0.8rem">Photos stay in this job unless you Save photos to phone (or share/save after each shot).</p>
       <div class="photo-check-grid" id="photo-checklist"></div>
     </section>
 
@@ -119,6 +121,7 @@
     <button type="button" class="btn btn-primary" id="btn-fab-save">Save</button>
     <button type="button" class="btn" id="btn-fab-json">JSON</button>
     <button type="button" class="btn" id="btn-fab-report">Print report</button>
+    <button type="button" class="btn" id="btn-fab-photos">Save photos to phone</button>
   </div>
 
 
@@ -135,7 +138,7 @@
 
   <div class="toast" id="toast" role="status"></div>
 
-  <script src="items-data.js?v=5"></script>
-  <script src="app.js?v=5"></script>
+  <script src="items-data.js?v=6"></script>
+  <script src="app.js?v=6"></script>
 </body>
 </html>

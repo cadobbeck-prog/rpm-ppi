@@ -554,3 +554,5 @@ img { max-width: 100%; height: auto; }
 .report-only { display: none; }
 body.printing .report-only { display: block; }
 body.printing .screen-only { display: none !important; }
+
+.photo-device-hint{flex-basis:100%;margin:4px 0 0;font-size:0.75rem;color:var(--muted);line-height:1.35}
