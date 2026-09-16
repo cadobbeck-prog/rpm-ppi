@@ -1,5 +1,5 @@
 /* Minimal offline cache for RPM PPI static assets — network-first so field updates land */
-const CACHE = 'rpm-ppi-v3';
+const CACHE = 'rpm-ppi-v4';
 const ASSETS = [
   './',
   './index.html',

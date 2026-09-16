@@ -20,7 +20,7 @@
     make: 'Ford',
     model: 'F-550 Super Duty mechanic crane',
     licStk: '',
-    vin: '',
+    vin: '1FDUF5GT3DEB38178',
     mileageIn: '86067',
     mileageOut: '',
     shopName: 'RPM Services',
