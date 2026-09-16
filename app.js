@@ -490,6 +490,14 @@
       results: Object.assign({}, base.results, rec.results || {}),
       requiredPhotos: Object.assign({}, base.requiredPhotos, rec.requiredPhotos || {}),
     });
+    // Saved blank fields used to block newer DEMO defaults (e.g. VIN).
+    // Fill only empty header keys from DEMO so a normal refresh picks them up.
+    Object.keys(DEMO).forEach(function (k) {
+      const cur = state.header[k];
+      if ((cur == null || String(cur).trim() === '') && DEMO[k]) {
+        state.header[k] = DEMO[k];
+      }
+    });
     Object.keys(state.results).forEach(function (k) {
       const r = state.results[k];
       if (!r.photos) r.photos = [];
