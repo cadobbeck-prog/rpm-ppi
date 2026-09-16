@@ -735,11 +735,9 @@
 
     let galleryHtml = '';
     if (gallerySrcs.length) {
-      galleryHtml = '<h2>All photos — tap to enlarge</h2><div class="photo-gallery photo-row">' +
+      galleryHtml = '<h2>All photos (appendix)</h2><div class="photo-gallery photo-row">' +
         gallerySrcs.map(function (src) { return photoImg(src, 'photo-gallery-thumb'); }).join('') +
         '</div>';
-    } else {
-      galleryHtml = '<h2>All photos — tap to enlarge</h2><p class="muted">(no photos yet)</p>';
     }
 
     const metaTable =
@@ -798,6 +796,7 @@
       '.box{border:1px solid #ccc;padding:10px;margin:10px 0}' +
       '.warn{background:#fff7ed;border:1px solid #f59e0b;padding:10px;font-size:12px}' +
       '.section-photos{margin:4px 0 14px;padding:8px;border:1px dashed #ccc;background:#fafafa;font-size:12px}' +
+      '.section-photos .photo-thumb{max-width:160px}' +
       '.photo-block{margin:6px 0}' +
       '.photo-label{font-weight:600;margin-bottom:4px}' +
       '.photo-row{display:flex;flex-wrap:wrap;gap:8px}' +
@@ -817,10 +816,10 @@
       metaTable +
       '<div class="warn"><ul style="margin:0;padding-left:18px">' +
       (DATA.meta.disclaimers || []).map(function (d) { return '<li>' + escapeHtml(d) + '</li>'; }).join('') +
-      '</ul></div><h2>Required Photos</h2>' + reqPhotos + galleryHtml + sectionsHtml +
+      '</ul></div><h2>Required Photos</h2>' + reqPhotos + sectionsHtml +
       '<h3>Technician Comments</h3><div class="box">' +
       escapeHtml(state.technicianComments || '(none)').replace(/\n/g, '<br>') + '</div>' +
-      sigBlock +
+      sigBlock + galleryHtml +
       '<p class="muted">Generated ' + new Date().toLocaleString() + ' · RPM Services PPI</p>' +
       lightbox + lightboxScript +
       '</body></html>';
