@@ -1,0 +1,948 @@
+window.PPI_ITEMS = {
+  "meta": {
+    "source": "rpm-ppi-shop-form.xlsx Sheet1",
+    "brand": "RPM Services",
+    "legacyShopName": "Restoration Performance Modification - R.P.M.",
+    "legacyAddress": [
+      "3597 Nevada St. Unit D",
+      "Pleasanton, CA 94566"
+    ],
+    "formTitle": "VEHICLE INSPECTION",
+    "disclaimers": [
+      "ALL ITEMS MARKED WITH AN ASTERIK (*) ARE CONSIDERED SAFETY ITEMS!",
+      "ALL VEHICLES UNDERGO A 2 MILE ROAD TEST, UNLESS NOTED OTHERWISE!",
+      "SAFETY INSPECTION IS A VISUAL INSPECTION ONLY!",
+      "INSPECTION IS ONLY VALID FOR DATE AND MILEAGE ON INSPECTION FORM!"
+    ],
+    "signatures": [
+      "TECHNICIAN SIGNATURE",
+      "CUSTOMER SIGNATURE"
+    ]
+  },
+  "photoChecklist": [
+    {
+      "id": "photo-odo",
+      "label": "Odometer"
+    },
+    {
+      "id": "photo-vin",
+      "label": "VIN"
+    },
+    {
+      "id": "photo-corner-fl",
+      "label": "Front Left Corner"
+    },
+    {
+      "id": "photo-corner-fr",
+      "label": "Front Right Corner"
+    },
+    {
+      "id": "photo-corner-rl",
+      "label": "Rear Left Corner"
+    },
+    {
+      "id": "photo-corner-rr",
+      "label": "Rear Right Corner"
+    },
+    {
+      "id": "photo-engine",
+      "label": "Engine"
+    },
+    {
+      "id": "photo-undercarriage",
+      "label": "Undercarriage"
+    },
+    {
+      "id": "photo-defects",
+      "label": "Defects (as found)"
+    }
+  ],
+  "sections": [
+    {
+      "id": "headlights",
+      "title": "HEADLIGHTS",
+      "items": [
+        {
+          "id": "headlights__left-front",
+          "label": "LEFT FRONT",
+          "safety": true,
+          "excelRow": 16
+        },
+        {
+          "id": "headlights__right-front",
+          "label": "RIGHT FRONT",
+          "safety": true,
+          "excelRow": 17
+        },
+        {
+          "id": "headlights__brights",
+          "label": "BRIGHTS",
+          "safety": true,
+          "excelRow": 18
+        }
+      ]
+    },
+    {
+      "id": "running-lights",
+      "title": "RUNNING LIGHTS",
+      "items": [
+        {
+          "id": "running-lights__left-front",
+          "label": "LEFT FRONT",
+          "safety": true,
+          "excelRow": 20
+        },
+        {
+          "id": "running-lights__right-front",
+          "label": "RIGHT FRONT",
+          "safety": true,
+          "excelRow": 21
+        },
+        {
+          "id": "running-lights__left-rear",
+          "label": "LEFT REAR",
+          "safety": true,
+          "excelRow": 22
+        },
+        {
+          "id": "running-lights__right-rear",
+          "label": "RIGHT REAR",
+          "safety": true,
+          "excelRow": 23
+        },
+        {
+          "id": "running-lights__license-plate",
+          "label": "LICENSE PLATE",
+          "safety": true,
+          "excelRow": 24
+        }
+      ]
+    },
+    {
+      "id": "turn-signals",
+      "title": "TURN SIGNALS",
+      "items": [
+        {
+          "id": "turn-signals__left-front",
+          "label": "LEFT FRONT",
+          "safety": true,
+          "excelRow": 26
+        },
+        {
+          "id": "turn-signals__right-front",
+          "label": "RIGHT FRONT",
+          "safety": true,
+          "excelRow": 27
+        },
+        {
+          "id": "turn-signals__left-rear",
+          "label": "LEFT REAR",
+          "safety": true,
+          "excelRow": 28
+        },
+        {
+          "id": "turn-signals__right-rear",
+          "label": "RIGHT REAR",
+          "safety": true,
+          "excelRow": 29
+        },
+        {
+          "id": "turn-signals__side-markers",
+          "label": "SIDE MARKERS",
+          "safety": true,
+          "excelRow": 30
+        }
+      ]
+    },
+    {
+      "id": "brake-lights",
+      "title": "BRAKE LIGHTS",
+      "items": [
+        {
+          "id": "brake-lights__left-rear",
+          "label": "LEFT REAR",
+          "safety": true,
+          "excelRow": 32
+        },
+        {
+          "id": "brake-lights__right-rear",
+          "label": "RIGHT REAR",
+          "safety": true,
+          "excelRow": 33
+        },
+        {
+          "id": "brake-lights__center",
+          "label": "CENTER",
+          "safety": true,
+          "excelRow": 34
+        }
+      ]
+    },
+    {
+      "id": "reverse-lights",
+      "title": "REVERSE LIGHTS",
+      "items": [
+        {
+          "id": "reverse-lights__left",
+          "label": "LEFT",
+          "safety": false,
+          "excelRow": 36
+        },
+        {
+          "id": "reverse-lights__right",
+          "label": "RIGHT",
+          "safety": false,
+          "excelRow": 37
+        }
+      ]
+    },
+    {
+      "id": "interior-lights",
+      "title": "INTERIOR LIGHTS",
+      "items": [
+        {
+          "id": "interior-lights__dome",
+          "label": "DOME",
+          "safety": false,
+          "excelRow": 39
+        },
+        {
+          "id": "interior-lights__door",
+          "label": "DOOR",
+          "safety": false,
+          "excelRow": 40
+        },
+        {
+          "id": "interior-lights__map",
+          "label": "MAP",
+          "safety": false,
+          "excelRow": 41
+        },
+        {
+          "id": "interior-lights__dash-gauges",
+          "label": "DASH/GAUGES",
+          "safety": false,
+          "excelRow": 42
+        }
+      ]
+    },
+    {
+      "id": "windshield-wipers",
+      "title": "WINDSHIELD / WIPERS",
+      "items": [
+        {
+          "id": "windshield-wipers__left",
+          "label": "LEFT",
+          "safety": true,
+          "excelRow": 44
+        },
+        {
+          "id": "windshield-wipers__right",
+          "label": "RIGHT",
+          "safety": true,
+          "excelRow": 45
+        },
+        {
+          "id": "windshield-wipers__washer",
+          "label": "WASHER",
+          "safety": false,
+          "excelRow": 46
+        }
+      ]
+    },
+    {
+      "id": "seat-belts",
+      "title": "SEAT BELTS",
+      "items": [
+        {
+          "id": "seat-belts__left-front",
+          "label": "LEFT FRONT",
+          "safety": true,
+          "excelRow": 49
+        },
+        {
+          "id": "seat-belts__right-front",
+          "label": "RIGHT FRONT",
+          "safety": true,
+          "excelRow": 50
+        },
+        {
+          "id": "seat-belts__left-rear",
+          "label": "LEFT REAR",
+          "safety": true,
+          "excelRow": 51
+        },
+        {
+          "id": "seat-belts__right-rear",
+          "label": "RIGHT REAR",
+          "safety": true,
+          "excelRow": 52
+        },
+        {
+          "id": "seat-belts__center-rear",
+          "label": "CENTER REAR",
+          "safety": true,
+          "excelRow": 53
+        },
+        {
+          "id": "seat-belts__warning-indicator",
+          "label": "WARNING INDICATOR",
+          "safety": true,
+          "excelRow": 54
+        }
+      ]
+    },
+    {
+      "id": "instrument-cluster-gauges",
+      "title": "INSTRUMENT CLUSTER / GAUGES",
+      "items": [
+        {
+          "id": "instrument-cluster-gauges__fuel",
+          "label": "FUEL",
+          "safety": false,
+          "excelRow": 56
+        },
+        {
+          "id": "instrument-cluster-gauges__speedometer",
+          "label": "SPEEDOMETER",
+          "safety": true,
+          "excelRow": 57
+        },
+        {
+          "id": "instrument-cluster-gauges__odometer",
+          "label": "ODOMETER",
+          "safety": true,
+          "excelRow": 58
+        },
+        {
+          "id": "instrument-cluster-gauges__rpm",
+          "label": "RPM",
+          "safety": false,
+          "excelRow": 59
+        },
+        {
+          "id": "instrument-cluster-gauges__oil-pressure",
+          "label": "OIL PRESSURE",
+          "safety": false,
+          "excelRow": 60
+        },
+        {
+          "id": "instrument-cluster-gauges__water-temp",
+          "label": "WATER TEMP",
+          "safety": false,
+          "excelRow": 61
+        },
+        {
+          "id": "instrument-cluster-gauges__oil-temp",
+          "label": "OIL TEMP",
+          "safety": false,
+          "excelRow": 62
+        },
+        {
+          "id": "instrument-cluster-gauges__volts-amps",
+          "label": "VOLTS / AMPS",
+          "safety": false,
+          "excelRow": 63
+        },
+        {
+          "id": "instrument-cluster-gauges__neutral-safety-sw",
+          "label": "NEUTRAL SAFETY SW",
+          "safety": true,
+          "excelRow": 64
+        }
+      ]
+    },
+    {
+      "id": "instrument-cluster-gauges-2",
+      "title": "INSTRUMENT CLUSTER / GAUGES",
+      "items": [
+        {
+          "id": "instrument-cluster-gauges-2__check-engine-light",
+          "label": "CHECK ENGINE LIGHT",
+          "safety": false,
+          "excelRow": 66
+        },
+        {
+          "id": "instrument-cluster-gauges-2__abs-light",
+          "label": "ABS LIGHT",
+          "safety": false,
+          "excelRow": 67
+        },
+        {
+          "id": "instrument-cluster-gauges-2__air-bag-light",
+          "label": "AIR BAG LIGHT",
+          "safety": false,
+          "excelRow": 68
+        },
+        {
+          "id": "instrument-cluster-gauges-2__cluster-glass",
+          "label": "CLUSTER GLASS",
+          "safety": false,
+          "excelRow": 69
+        },
+        {
+          "id": "instrument-cluster-gauges-2__horn",
+          "label": "HORN",
+          "safety": true,
+          "excelRow": 70
+        }
+      ]
+    },
+    {
+      "id": "climate-control",
+      "title": "CLIMATE CONTROL",
+      "items": [
+        {
+          "id": "climate-control__air-conditioning",
+          "label": "AIR CONDITIONING",
+          "safety": false,
+          "excelRow": 72
+        },
+        {
+          "id": "climate-control__heater",
+          "label": "HEATER",
+          "safety": true,
+          "excelRow": 73
+        },
+        {
+          "id": "climate-control__defroster",
+          "label": "DEFROSTER",
+          "safety": true,
+          "excelRow": 74
+        }
+      ]
+    },
+    {
+      "id": "window-operation",
+      "title": "WINDOW OPERATION",
+      "items": [
+        {
+          "id": "window-operation__left-front",
+          "label": "LEFT FRONT",
+          "safety": false,
+          "excelRow": 76
+        },
+        {
+          "id": "window-operation__right-front",
+          "label": "RIGHT FRONT",
+          "safety": false,
+          "excelRow": 77
+        },
+        {
+          "id": "window-operation__left-rear",
+          "label": "LEFT REAR",
+          "safety": false,
+          "excelRow": 78
+        },
+        {
+          "id": "window-operation__right-rear",
+          "label": "RIGHT REAR",
+          "safety": false,
+          "excelRow": 79
+        },
+        {
+          "id": "window-operation__sunroof",
+          "label": "SUNROOF",
+          "safety": false,
+          "excelRow": 80
+        },
+        {
+          "id": "window-operation__convertible-top",
+          "label": "CONVERTIBLE TOP",
+          "safety": false,
+          "excelRow": 81
+        }
+      ]
+    },
+    {
+      "id": "latch-operation",
+      "title": "LATCH OPERATION",
+      "items": [
+        {
+          "id": "latch-operation__left-front-door",
+          "label": "LEFT FRONT DOOR",
+          "safety": false,
+          "excelRow": 83
+        },
+        {
+          "id": "latch-operation__right-front-door",
+          "label": "RIGHT FRONT DOOR",
+          "safety": false,
+          "excelRow": 84
+        },
+        {
+          "id": "latch-operation__left-rear-door",
+          "label": "LEFT REAR DOOR",
+          "safety": false,
+          "excelRow": 85
+        },
+        {
+          "id": "latch-operation__right-rear-door",
+          "label": "RIGHT REAR DOOR",
+          "safety": false,
+          "excelRow": 86
+        },
+        {
+          "id": "latch-operation__hood",
+          "label": "HOOD",
+          "safety": false,
+          "excelRow": 87
+        },
+        {
+          "id": "latch-operation__trunk",
+          "label": "TRUNK",
+          "safety": false,
+          "excelRow": 88
+        }
+      ]
+    },
+    {
+      "id": "mirrors",
+      "title": "MIRRORS",
+      "items": [
+        {
+          "id": "mirrors__driver-side",
+          "label": "DRIVER SIDE",
+          "safety": true,
+          "excelRow": 90
+        },
+        {
+          "id": "mirrors__passenger-side",
+          "label": "PASSENGER SIDE",
+          "safety": true,
+          "excelRow": 91
+        },
+        {
+          "id": "mirrors__rear-view",
+          "label": "REAR VIEW",
+          "safety": true,
+          "excelRow": 92
+        }
+      ]
+    },
+    {
+      "id": "tires",
+      "title": "TIRES",
+      "items": [
+        {
+          "id": "tires__left-front",
+          "label": "LEFT FRONT",
+          "safety": true,
+          "excelRow": 95
+        },
+        {
+          "id": "tires__right-front",
+          "label": "RIGHT FRONT",
+          "safety": true,
+          "excelRow": 96
+        },
+        {
+          "id": "tires__left-rear",
+          "label": "LEFT REAR",
+          "safety": true,
+          "excelRow": 97
+        },
+        {
+          "id": "tires__right-rear",
+          "label": "RIGHT REAR",
+          "safety": true,
+          "excelRow": 98
+        },
+        {
+          "id": "tires__spare",
+          "label": "SPARE",
+          "safety": false,
+          "excelRow": 99
+        }
+      ]
+    },
+    {
+      "id": "brakes",
+      "title": "BRAKES",
+      "items": [
+        {
+          "id": "brakes__master-cylinder",
+          "label": "MASTER CYLINDER",
+          "safety": true,
+          "excelRow": 101
+        },
+        {
+          "id": "brakes__left-front-caliper",
+          "label": "LEFT FRONT CALIPER",
+          "safety": true,
+          "excelRow": 102
+        },
+        {
+          "id": "brakes__left-front-cylinder",
+          "label": "LEFT FRONT CYLINDER",
+          "safety": true,
+          "excelRow": 103
+        },
+        {
+          "id": "brakes__left-front-pad-shoe",
+          "label": "LEFT FRONT PAD/SHOE",
+          "safety": true,
+          "excelRow": 104
+        },
+        {
+          "id": "brakes__right-front-caliper",
+          "label": "RIGHT FRONT CALIPER",
+          "safety": true,
+          "excelRow": 105
+        },
+        {
+          "id": "brakes__right-front-cylinder",
+          "label": "RIGHT FRONT CYLINDER",
+          "safety": true,
+          "excelRow": 106
+        },
+        {
+          "id": "brakes__right-front-pad-shoe",
+          "label": "RIGHT FRONT PAD/SHOE",
+          "safety": true,
+          "excelRow": 107
+        },
+        {
+          "id": "brakes__left-rear-caliper",
+          "label": "LEFT REAR CALIPER",
+          "safety": true,
+          "excelRow": 108
+        },
+        {
+          "id": "brakes__left-rear-cylinder",
+          "label": "LEFT REAR CYLINDER",
+          "safety": true,
+          "excelRow": 109
+        },
+        {
+          "id": "brakes__left-rear-pad-shoe",
+          "label": "LEFT REAR PAD/SHOE",
+          "safety": true,
+          "excelRow": 110
+        },
+        {
+          "id": "brakes__right-rear-caliper",
+          "label": "RIGHT REAR CALIPER",
+          "safety": true,
+          "excelRow": 111
+        },
+        {
+          "id": "brakes__right-rear-cylinder",
+          "label": "RIGHT REAR CYLINDER",
+          "safety": true,
+          "excelRow": 112
+        },
+        {
+          "id": "brakes__right-rear-pad-shoe",
+          "label": "RIGHT REAR PAD/SHOE",
+          "safety": true,
+          "excelRow": 113
+        }
+      ]
+    },
+    {
+      "id": "brake-lines-hoses",
+      "title": "BRAKE LINES / HOSES",
+      "items": [
+        {
+          "id": "brake-lines-hoses__left-front",
+          "label": "LEFT FRONT",
+          "safety": true,
+          "excelRow": 115
+        },
+        {
+          "id": "brake-lines-hoses__right-front",
+          "label": "RIGHT FRONT",
+          "safety": true,
+          "excelRow": 116
+        },
+        {
+          "id": "brake-lines-hoses__left-rear",
+          "label": "LEFT REAR",
+          "safety": true,
+          "excelRow": 117
+        },
+        {
+          "id": "brake-lines-hoses__center-rear",
+          "label": "CENTER REAR",
+          "safety": true,
+          "excelRow": 118
+        },
+        {
+          "id": "brake-lines-hoses__right-rear",
+          "label": "RIGHT REAR",
+          "safety": true,
+          "excelRow": 119
+        },
+        {
+          "id": "brake-lines-hoses__hard-lines",
+          "label": "HARD LINES",
+          "safety": false,
+          "excelRow": 120
+        }
+      ]
+    },
+    {
+      "id": "steering-suspension-components",
+      "title": "STEERING / SUSPENSION COMPONENTS",
+      "items": [
+        {
+          "id": "steering-suspension-components__rack-and-pinion-unit",
+          "label": "RACK AND PINION UNIT",
+          "safety": false,
+          "excelRow": 122
+        },
+        {
+          "id": "steering-suspension-components__steering-box",
+          "label": "STEERING BOX",
+          "safety": false,
+          "excelRow": 123
+        },
+        {
+          "id": "steering-suspension-components__shocks-struts",
+          "label": "SHOCKS / STRUTS",
+          "safety": false,
+          "excelRow": 124
+        },
+        {
+          "id": "steering-suspension-components__ball-joints",
+          "label": "BALL JOINTS",
+          "safety": true,
+          "excelRow": 125
+        },
+        {
+          "id": "steering-suspension-components__tie-rod-ends",
+          "label": "TIE ROD ENDS",
+          "safety": true,
+          "excelRow": 126
+        },
+        {
+          "id": "steering-suspension-components__pitman-arm",
+          "label": "PITMAN ARM",
+          "safety": false,
+          "excelRow": 127
+        },
+        {
+          "id": "steering-suspension-components__idler-arm",
+          "label": "IDLER ARM",
+          "safety": false,
+          "excelRow": 128
+        },
+        {
+          "id": "steering-suspension-components__drag-link",
+          "label": "DRAG LINK",
+          "safety": false,
+          "excelRow": 129
+        },
+        {
+          "id": "steering-suspension-components__sway-bar",
+          "label": "SWAY BAR",
+          "safety": false,
+          "excelRow": 130
+        },
+        {
+          "id": "steering-suspension-components__front-bushings",
+          "label": "FRONT BUSHINGS",
+          "safety": false,
+          "excelRow": 131
+        },
+        {
+          "id": "steering-suspension-components__rear-bushings",
+          "label": "REAR BUSHINGS",
+          "safety": false,
+          "excelRow": 132
+        }
+      ]
+    },
+    {
+      "id": "undercarriage",
+      "title": "UNDERCARRIAGE",
+      "items": [
+        {
+          "id": "undercarriage__engine-mounts",
+          "label": "ENGINE MOUNTS",
+          "safety": false,
+          "excelRow": 134
+        },
+        {
+          "id": "undercarriage__trans-mounts",
+          "label": "TRANS. MOUNTS",
+          "safety": false,
+          "excelRow": 135
+        },
+        {
+          "id": "undercarriage__drive-shaft",
+          "label": "DRIVE SHAFT",
+          "safety": false,
+          "excelRow": 136
+        },
+        {
+          "id": "undercarriage__u-joints",
+          "label": "U-JOINTS",
+          "safety": false,
+          "excelRow": 137
+        },
+        {
+          "id": "undercarriage__fuel-lines",
+          "label": "FUEL LINES",
+          "safety": false,
+          "excelRow": 138
+        },
+        {
+          "id": "undercarriage__exhaust-leaks",
+          "label": "EXHAUST LEAKS",
+          "safety": false,
+          "excelRow": 139
+        },
+        {
+          "id": "undercarriage__loose-components",
+          "label": "LOOSE COMPONENTS",
+          "safety": false,
+          "excelRow": 141
+        }
+      ]
+    },
+    {
+      "id": "fluid-leaks",
+      "title": "FLUID LEAKS",
+      "items": [
+        {
+          "id": "fluid-leaks__coolant",
+          "label": "COOLANT",
+          "safety": false,
+          "excelRow": 143
+        },
+        {
+          "id": "fluid-leaks__power-steering",
+          "label": "POWER STEERING",
+          "safety": false,
+          "excelRow": 144
+        },
+        {
+          "id": "fluid-leaks__air-conditioning",
+          "label": "AIR CONDITIONING",
+          "safety": false,
+          "excelRow": 145
+        },
+        {
+          "id": "fluid-leaks__engine-oil",
+          "label": "ENGINE OIL",
+          "safety": false,
+          "excelRow": 146
+        },
+        {
+          "id": "fluid-leaks__transmission",
+          "label": "TRANSMISSION",
+          "safety": false,
+          "excelRow": 147
+        },
+        {
+          "id": "fluid-leaks__differential",
+          "label": "DIFFERENTIAL",
+          "safety": false,
+          "excelRow": 148
+        },
+        {
+          "id": "fluid-leaks__brakes",
+          "label": "BRAKES",
+          "safety": false,
+          "excelRow": 149
+        },
+        {
+          "id": "fluid-leaks__fuel",
+          "label": "FUEL",
+          "safety": false,
+          "excelRow": 150
+        }
+      ]
+    },
+    {
+      "id": "electrical-tests",
+      "title": "ELECTRICAL TESTS",
+      "items": [
+        {
+          "id": "electrical-tests__battery-test",
+          "label": "BATTERY TEST",
+          "safety": false,
+          "excelRow": 152
+        },
+        {
+          "id": "electrical-tests__starter-test",
+          "label": "STARTER TEST",
+          "safety": false,
+          "excelRow": 153
+        },
+        {
+          "id": "electrical-tests__charging-test",
+          "label": "CHARGING TEST",
+          "safety": false,
+          "excelRow": 154
+        }
+      ]
+    },
+    {
+      "id": "miscellaneous",
+      "title": "MISCELLANEOUS",
+      "items": [
+        {
+          "id": "miscellaneous__frame-rust",
+          "label": "FRAME RUST",
+          "safety": false,
+          "excelRow": 156
+        },
+        {
+          "id": "miscellaneous__floor-pan-rust",
+          "label": "FLOOR PAN RUST",
+          "safety": false,
+          "excelRow": 157
+        },
+        {
+          "id": "miscellaneous__other-rust-noted",
+          "label": "OTHER RUST (NOTED)",
+          "safety": false,
+          "excelRow": 158
+        },
+        {
+          "id": "miscellaneous__road-test",
+          "label": "ROAD TEST",
+          "safety": false,
+          "excelRow": 159
+        }
+      ]
+    }
+  ],
+  "commercialSection": {
+    "id": "commercial-upfit",
+    "title": "Commercial / Upfit",
+    "optional": true,
+    "enabledByDefault": true,
+    "items": [
+      {
+        "id": "commercial-upfit__crane",
+        "label": "CRANE",
+        "safety": false
+      },
+      {
+        "id": "commercial-upfit__compressor",
+        "label": "COMPRESSOR",
+        "safety": false
+      },
+      {
+        "id": "commercial-upfit__service-body-doors",
+        "label": "SERVICE BODY DOORS",
+        "safety": false
+      },
+      {
+        "id": "commercial-upfit__outriggers",
+        "label": "OUTRIGGERS",
+        "safety": true
+      },
+      {
+        "id": "commercial-upfit__pto",
+        "label": "PTO",
+        "safety": false
+      }
+    ]
+  },
+  "technicianComments": true
+};

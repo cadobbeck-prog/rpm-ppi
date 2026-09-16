@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#b91c1c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="RPM Services vehicle pre-purchase / safety inspection">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <title>RPM Services PPI</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand-row">
+      <div class="brand-mark">RPM</div>
+      <div class="brand-text">
+        <h1>RPM Services</h1>
+        <p>Vehicle Inspection (PPI)</p>
+      </div>
+      <div class="header-actions no-print">
+        <button type="button" class="btn btn-sm btn-primary" id="btn-save">Save</button>
+        <button type="button" class="btn btn-sm" id="btn-report">Report</button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="section-nav no-print" id="section-nav" aria-label="Sections"></nav>
+
+  <main class="wrap">
+    <section class="card" id="header">
+      <h2>Job header</h2>
+      <form id="header-form" autocomplete="off">
+        <div class="grid-2">
+          <div class="field"><label for="f-year">Year</label><input id="f-year" inputmode="numeric"></div>
+          <div class="field"><label for="f-lic">LIC / STK#</label><input id="f-lic"></div>
+          <div class="field"><label for="f-make">Make</label><input id="f-make"></div>
+          <div class="field"><label for="f-vin">VIN</label><input id="f-vin" autocomplete="off"></div>
+          <div class="field span-2"><label for="f-model">Model</label><input id="f-model"></div>
+          <div class="field"><label for="f-mi-in">Mileage IN</label><input id="f-mi-in" inputmode="numeric"></div>
+          <div class="field"><label for="f-mi-out">Mileage OUT</label><input id="f-mi-out" inputmode="numeric"></div>
+          <div class="field"><label for="f-shop">Shop name</label><input id="f-shop"></div>
+          <div class="field"><label for="f-date">Date</label><input id="f-date" type="date"></div>
+          <div class="field span-2"><label for="f-shop-addr">Shop address (optional)</label><input id="f-shop-addr" placeholder="Not only legacy Pleasanton address"></div>
+          <div class="field"><label for="f-tech">Technician</label><input id="f-tech"></div>
+          <div class="field"><label for="f-fee">Fee ($)</label><input id="f-fee" inputmode="decimal"></div>
+          <div class="field span-2"><label for="f-client">Client</label><input id="f-client"></div>
+          <div class="field span-2"><label for="f-dealer">Dealer / location</label><input id="f-dealer"></div>
+        </div>
+        <div class="toggle-row" style="margin-top:12px">
+          <div>
+            <strong>Commercial / Upfit section</strong>
+            <div style="font-size:0.8rem;color:var(--muted)">Crane, compressor, service body, outriggers, PTO</div>
+          </div>
+          <label class="switch" aria-label="Enable commercial upfit">
+            <input type="checkbox" id="f-commercial" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="progress-bar" aria-hidden="true"><span id="prog-fill"></span></div>
+        <div class="progress-meta">
+          <span id="prog-text">0 / 0</span>
+          <span id="save-status"></span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px" class="no-print">
+          <button type="button" class="btn btn-sm" id="btn-export-json">Export JSON</button>
+          <button type="button" class="btn btn-sm" id="btn-demo">Reset demo job</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card" id="photos">
+      <h2>Required photo checklist</h2>
+      <p style="margin:0 0 10px;font-size:0.85rem;color:var(--muted)">Odo, VIN, 4 corners, engine, undercarriage, defects. Camera uses rear lens when available.</p>
+      <div class="photo-check-grid" id="photo-checklist"></div>
+    </section>
+
+    <div id="checklist"></div>
+
+    <section class="card" id="comments">
+      <h2>Technician comments</h2>
+      <div class="field">
+        <label for="f-tech-comments">Notes</label>
+        <textarea id="f-tech-comments" placeholder="Overall notes, road test notes, deferred items…"></textarea>
+      </div>
+    </section>
+
+    <section class="card" id="disclaimers-card">
+      <h2>Disclaimers</h2>
+      <ul class="disclaimers" id="disclaimers"></ul>
+    </section>
+
+    <section class="card" id="signatures">
+      <h2>Signatures</h2>
+      <div class="sig-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <strong>Technician signature</strong>
+          <button type="button" class="btn btn-sm no-print" id="clr-tech">Clear</button>
+        </div>
+        <div class="sig-canvas-wrap"><canvas id="sig-tech" width="600" height="120"></canvas></div>
+        <div class="field" style="margin-top:8px"><label for="f-tech-sig-date">Date</label><input id="f-tech-sig-date" type="date"></div>
+      </div>
+      <div class="sig-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <strong>Customer signature</strong>
+          <button type="button" class="btn btn-sm no-print" id="clr-cust">Clear</button>
+        </div>
+        <div class="sig-canvas-wrap"><canvas id="sig-cust" width="600" height="120"></canvas></div>
+        <div class="field" style="margin-top:8px"><label for="f-cust-sig-date">Date</label><input id="f-cust-sig-date" type="date"></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="fab-bar no-print">
+    <button type="button" class="btn btn-primary" id="btn-fab-save">Save</button>
+    <button type="button" class="btn" id="btn-fab-json">JSON</button>
+    <button type="button" class="btn" id="btn-fab-report">Print report</button>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script src="items-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
